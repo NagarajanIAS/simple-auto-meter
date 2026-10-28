@@ -72,7 +72,9 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
         lastGood = fix
 
         val point = if (params.smoothing) smoother.process(fix) else fix.latLng
-        val speed = fix.speedMps?.toDouble() ?: windowSpeed(fix.timeMs, point)
+        // Displacement over a few seconds decides moving vs stopped; the receiver's own speed
+        // is only a fallback until that window fills (it can read ~5 km/h while parked).
+        val speed = windowSpeed(fix.timeMs, point) ?: fix.speedMps?.toDouble()
 
         val from = anchor
         if (from == null) {
@@ -96,8 +98,8 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
     }
 
     /**
-     * Speed when the receiver reports none. Fix-to-fix speed is dominated by jitter
-     * (±2 m per second reads as ~10 km/h), so measure displacement over a few seconds instead.
+     * Speed from displacement over the last few seconds. Fix-to-fix speed is dominated by jitter
+     * (±2 m per second reads as ~10 km/h); a 10 s window of smoothed positions is not.
      */
     private fun windowSpeed(timeMs: Long, point: LatLng): Double? {
         recent.addLast(timeMs to point)

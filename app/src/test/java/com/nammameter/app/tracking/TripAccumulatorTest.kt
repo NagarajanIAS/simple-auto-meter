@@ -31,8 +31,9 @@ class TripAccumulatorTest {
     fun `moving resets the auto wait timer`() {
         val acc = TripAccumulator(params, nowMs = 0)
         for (s in 0L..50L) { acc.onFix(fix(origin, s, 0.0)); acc.tick(s * 1000) }
-        acc.onFix(fix(north(10.0), 51, 30.0)); acc.tick(51_000)
-        for (s in 52L..100L) { acc.onFix(fix(north(10.0), s, 0.0)); acc.tick(s * 1000) }
+        // Drive 100 m at 36 km/h, then stop again for under a minute.
+        for (s in 51L..60L) { acc.onFix(fix(north((s - 50) * 10.0), s, 36.0)); acc.tick(s * 1000) }
+        for (s in 61L..100L) { acc.onFix(fix(north(100.0), s, 0.0)); acc.tick(s * 1000) }
         assertFalse(acc.isAutoWaiting(100_000))
         assertEquals(0L, acc.waitingMs)
     }
@@ -72,6 +73,29 @@ class TripAccumulatorTest {
             acc.tick(s * 1000)
         }
         assertFalse(acc.isAutoWaiting(120_000))
+        assertEquals(0L, acc.waitingMs)
+    }
+
+    @Test
+    fun `receiver speed spikes while parked do not reset the stop timer`() {
+        // Seen on the emulator: fused speed reads up to 1.5 m/s (5.4 km/h) while standing still.
+        val acc = TripAccumulator(params, nowMs = 0)
+        for (s in 0L..120L) {
+            val spike = if (s % 7 == 0L) 1.5f else 0.01f
+            acc.onFix(LocationFix(origin.lat, origin.lng, 5f, s * 1000, speedMps = spike))
+            acc.tick(s * 1000)
+        }
+        assertTrue(acc.isAutoWaiting(120_000))
+        assertTrue("waiting=${acc.waitingMs}", acc.waitingMs >= 50_000)
+    }
+
+    @Test
+    fun `receiver reporting zero speed while driving is not waiting`() {
+        val acc = TripAccumulator(params, nowMs = 0)
+        for (s in 0L..120L) {
+            acc.onFix(LocationFix(north(s * 8.33).lat, origin.lng, 5f, s * 1000, speedMps = 0.01f))
+            acc.tick(s * 1000)
+        }
         assertEquals(0L, acc.waitingMs)
     }
 
