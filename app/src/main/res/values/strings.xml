@@ -135,6 +135,7 @@
     <string name="ors_key">OpenRouteService API key</string>
     <string name="ors_note">Optional. Free key from openrouteservice.org. Only the start and destination coordinates are sent, and only when you ask for an estimate.</string>
     <string name="tile_url">Map tile URL ({z}/{x}/{y})</string>
+    <string name="tile_url_invalid">Must start with https:// and contain {z}, {x} and {y}.</string>
     <string name="tile_note">Respect the tile server\'s usage policy. The default OpenStreetMap server is for light use only.</string>
     <string name="other">Other</string>
     <string name="location_permission">Location permission</string>
@@ -152,6 +153,7 @@
     <string name="pin_save">Save PIN</string>
     <string name="pin_enter_title">Enter driver PIN</string>
     <string name="pin_wrong">Wrong PIN</string>
+    <string name="pin_locked">Too many wrong PINs. Try again in %d s.</string>
     <string name="pin_change">Change PIN</string>
     <string name="unlock">Unlock</string>
     <string name="upi_id">UPI ID (VPA)</string>

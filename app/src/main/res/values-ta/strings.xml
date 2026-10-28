@@ -133,6 +133,7 @@
     <string name="ors_key">OpenRouteService API key</string>
     <string name="ors_note">விருப்பத்தேர்வு. openrouteservice.org-ல் இலவச key பெறலாம். நீங்கள் மதிப்பீடு கேட்கும்போது மட்டும் தொடக்க, சேருமிட ஆயத்தொலைவுகள் அனுப்பப்படும்.</string>
     <string name="tile_url">வரைபட டைல் URL ({z}/{x}/{y})</string>
+    <string name="tile_url_invalid">https:// இல் தொடங்கி {z}, {x}, {y} ஆகியவற்றைக் கொண்டிருக்க வேண்டும்.</string>
     <string name="tile_note">டைல் சேவையகத்தின் பயன்பாட்டுக் கொள்கையை மதிக்கவும். இயல்பு OpenStreetMap சேவையகம் குறைந்த பயன்பாட்டிற்கு மட்டுமே.</string>
     <string name="other">பிற</string>
     <string name="location_permission">இருப்பிட அனுமதி</string>
@@ -150,6 +151,7 @@
     <string name="pin_save">PIN-ஐச் சேமி</string>
     <string name="pin_enter_title">ஓட்டுநர் PIN-ஐ உள்ளிடவும்</string>
     <string name="pin_wrong">தவறான PIN</string>
+    <string name="pin_locked">தவறான PIN பலமுறை. %d விநாடிகளில் மீண்டும் முயலவும்.</string>
     <string name="pin_change">PIN-ஐ மாற்று</string>
     <string name="unlock">திற</string>
     <string name="upi_id">UPI ID (VPA)</string>

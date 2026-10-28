@@ -14,6 +14,8 @@ object Upi {
      * Builds a UPI deep link. With [amount] null the QR is "static" and the payer types the amount.
      */
     fun payUri(vpa: String, payeeName: String, amount: BigDecimal?, note: String?): String = buildString {
+        // A valid VPA contains only [A-Za-z0-9._-@], so it needs no encoding and cannot add parameters.
+        require(isValidVpa(vpa)) { "Invalid VPA" }
         append("upi://pay?pa=").append(vpa.trim())
         append("&pn=").append(encode(payeeName.trim()))
         if (amount != null) append("&am=").append(amount.setScale(2, RoundingMode.HALF_UP).toPlainString())

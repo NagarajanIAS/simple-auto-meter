@@ -9,7 +9,10 @@ data class MeterParams(
     /** Waiting accrues once the auto has been stopped continuously for longer than this. */
     val autoWaitAfterSeconds: Int = 60,
     val gps: GpsFilterParams = GpsFilterParams(),
-)
+) {
+    val isValid: Boolean
+        get() = autoWaitSpeedKmh in 0.0..1_000.0 && autoWaitAfterSeconds in 0..86_400 && gps.isValid
+}
 
 /**
  * Pure trip state machine: distance from the GPS filter, and moving vs waiting time.

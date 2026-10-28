@@ -45,13 +45,13 @@ data class FareConfig(
 ) {
     /** Returns a list of human-readable problems; empty when the config is usable. */
     fun problems(): List<String> = buildList {
-        if (minFare < 0) add("minFare must be ≥ 0")
-        if (minDistanceKm < 0) add("minDistanceKm must be ≥ 0")
-        if (perKmRate < 0) add("perKmRate must be ≥ 0")
-        if (distanceStepMeters <= 0) add("distanceStepMeters must be > 0")
-        if (waitingRate < 0) add("waitingRate must be ≥ 0")
-        if (waitingBlockMinutes <= 0) add("waitingBlockMinutes must be > 0")
-        if (nightMultiplier < 1.0) add("nightMultiplier must be ≥ 1")
+        if (minFare !in 0.0..MAX_RUPEES) add("minFare must be 0–$MAX_RUPEES")
+        if (minDistanceKm !in 0.0..MAX_KM) add("minDistanceKm must be 0–$MAX_KM")
+        if (perKmRate !in 0.0..MAX_RUPEES) add("perKmRate must be 0–$MAX_RUPEES")
+        if (distanceStepMeters !in 1..100_000) add("distanceStepMeters must be 1–100000")
+        if (waitingRate !in 0.0..MAX_RUPEES) add("waitingRate must be 0–$MAX_RUPEES")
+        if (waitingBlockMinutes !in 1..1440) add("waitingBlockMinutes must be 1–1440")
+        if (nightMultiplier !in 1.0..MAX_MULTIPLIER) add("nightMultiplier must be 1–$MAX_MULTIPLIER")
         if (nightStartMinutes !in 0 until MINUTES_PER_DAY) add("nightStart out of range")
         if (nightEndMinutes !in 0 until MINUTES_PER_DAY) add("nightEnd out of range")
     }
@@ -60,5 +60,11 @@ data class FareConfig(
 
     companion object {
         const val MINUTES_PER_DAY = 24 * 60
+
+        // Upper bounds keep every intermediate amount far inside Long paise and reject NaN/Infinity
+        // (a range check on a NaN is false, so NaN fails too).
+        const val MAX_RUPEES = 100_000.0
+        const val MAX_KM = 1_000.0
+        const val MAX_MULTIPLIER = 10.0
     }
 }

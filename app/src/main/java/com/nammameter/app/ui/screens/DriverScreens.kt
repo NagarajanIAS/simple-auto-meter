@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,11 +57,14 @@ import com.nammameter.app.ui.formatRupeesExact
 import com.nammameter.app.upi.PinHasher
 import com.nammameter.app.upi.QrCode
 import com.nammameter.app.upi.Upi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -73,17 +78,41 @@ class DriverViewModel(private val container: AppContainer) : ViewModel() {
     var unlocked by mutableStateOf(false)
         private set
 
-    fun tryUnlock(pin: String): Boolean {
+    /** Milliseconds until another attempt is allowed, or 0. */
+    fun lockRemainingMs(): Long =
+        ((settings.value?.driver?.pinLockedUntilEpochMs ?: 0L) - System.currentTimeMillis()).coerceAtLeast(0)
+
+    /** Wrong attempts beyond [FREE_ATTEMPTS] lock the screen for a doubling delay. The counter survives restarts. */
+    suspend fun tryUnlock(pin: String): Boolean {
         val d = settings.value?.driver ?: return false
-        unlocked = PinHasher.verify(pin, d.pinSalt, d.pinHash)
-        return unlocked
+        if (lockRemainingMs() > 0) return false
+        val ok = withContext(Dispatchers.Default) { PinHasher.verify(pin, d.pinSalt, d.pinHash) }
+        container.settings.update { s ->
+            val attempts = if (ok) 0 else s.driver.failedPinAttempts + 1
+            val lockMs = if (attempts > FREE_ATTEMPTS) BASE_LOCK_MS shl (attempts - FREE_ATTEMPTS - 1).coerceAtMost(8) else 0L
+            s.copy(driver = s.driver.copy(failedPinAttempts = attempts, pinLockedUntilEpochMs = System.currentTimeMillis() + lockMs))
+        }
+        unlocked = ok
+        return ok
     }
 
     fun createPin(pin: String) {
+        setPin(pin)
+        unlocked = true
+    }
+
+    /** Changing the PIN writes the new hash in one step; there is never a moment with no PIN. */
+    fun changePin(newPin: String) = setPin(newPin)
+
+    private fun setPin(pin: String) {
         val salt = PinHasher.newSalt()
         val hash = PinHasher.hash(pin, salt)
-        updateDriver { it.copy(pinHash = hash, pinSalt = salt) }
-        unlocked = true
+        updateDriver { it.copy(pinHash = hash, pinSalt = salt, failedPinAttempts = 0, pinLockedUntilEpochMs = 0) }
+    }
+
+    private companion object {
+        const val FREE_ATTEMPTS = 4
+        const val BASE_LOCK_MS = 30_000L
     }
 
     fun updateDriver(transform: (DriverSettings) -> DriverSettings) {
@@ -102,15 +131,17 @@ fun DriverScreen(onBack: () -> Unit, onStaticQr: () -> Unit, onEarnings: () -> U
         Column(
             Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
         ) {
+            var changingPin by remember { mutableStateOf(false) }
             when {
                 !d.hasPin -> CreatePin(onCreated = vm::createPin)
-                !vm.unlocked -> EnterPin(onSubmit = vm::tryUnlock)
+                !vm.unlocked -> EnterPin(onSubmit = vm::tryUnlock, lockRemainingMs = vm::lockRemainingMs)
+                changingPin -> CreatePin(onCreated = { vm.changePin(it); changingPin = false })
                 else -> DriverSettingsForm(
                     driver = d,
                     onChange = vm::updateDriver,
                     onStaticQr = onStaticQr,
                     onEarnings = onEarnings,
-                    onChangePin = { vm.updateDriver { it.copy(pinHash = "", pinSalt = "") } },
+                    onChangePin = { changingPin = true },
                 )
             }
         }
@@ -134,8 +165,9 @@ private fun PinField(label: String, value: String, onValue: (String) -> Unit, is
 
 @Composable
 private fun CreatePin(onCreated: (String) -> Unit) {
-    var pin by rememberSaveable { mutableStateOf("") }
-    var again by rememberSaveable { mutableStateOf("") }
+    // Plain remember: PIN digits must not be written to saved instance state.
+    var pin by remember { mutableStateOf("") }
+    var again by remember { mutableStateOf("") }
     val mismatch = again.length == 4 && pin != again
     Text(stringResource(R.string.pin_create_title), style = MaterialTheme.typography.titleLarge)
     Text(stringResource(R.string.pin_create_text))
@@ -150,15 +182,36 @@ private fun CreatePin(onCreated: (String) -> Unit) {
 }
 
 @Composable
-private fun EnterPin(onSubmit: (String) -> Boolean) {
-    var pin by rememberSaveable { mutableStateOf("") }
+private fun EnterPin(onSubmit: suspend (String) -> Boolean, lockRemainingMs: () -> Long) {
+    var pin by remember { mutableStateOf("") }
     var wrong by remember { mutableStateOf(false) }
+    var checking by remember { mutableStateOf(false) }
+    var lockSeconds by remember { mutableStateOf(0L) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(wrong, checking) {
+        while (true) {
+            lockSeconds = (lockRemainingMs() + 999) / 1000
+            if (lockSeconds == 0L) break
+            delay(1000)
+        }
+    }
     Text(stringResource(R.string.pin_enter_title), style = MaterialTheme.typography.titleLarge)
     PinField(stringResource(R.string.pin), pin, { pin = it; wrong = false }, isError = wrong)
-    if (wrong) Text(stringResource(R.string.pin_wrong), color = MaterialTheme.colorScheme.error)
+    if (lockSeconds > 0) {
+        Text(stringResource(R.string.pin_locked, lockSeconds), color = MaterialTheme.colorScheme.error)
+    } else if (wrong) {
+        Text(stringResource(R.string.pin_wrong), color = MaterialTheme.colorScheme.error)
+    }
     Button(
-        onClick = { wrong = !onSubmit(pin); if (wrong) pin = "" },
-        enabled = pin.length == 4,
+        onClick = {
+            checking = true
+            scope.launch {
+                wrong = !onSubmit(pin)
+                if (wrong) pin = ""
+                checking = false
+            }
+        },
+        enabled = pin.length == 4 && !checking && lockSeconds == 0L,
         modifier = Modifier.fillMaxWidth().height(56.dp),
     ) { Text(stringResource(R.string.unlock)) }
 }

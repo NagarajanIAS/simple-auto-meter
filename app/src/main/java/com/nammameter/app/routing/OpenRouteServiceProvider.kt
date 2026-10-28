@@ -13,7 +13,7 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonArray
 import java.io.IOException
-import java.net.HttpURLConnection
+import javax.net.ssl.HttpsURLConnection
 import java.net.URL
 
 /**
@@ -38,7 +38,9 @@ class OpenRouteServiceProvider(private val apiKey: String) : RoutingProvider {
                     }
                     put("units", "m")
                 }.toString()
-                val conn = (URL(ENDPOINT).openConnection() as HttpURLConnection).apply {
+                // HttpsURLConnection cast guarantees TLS; no redirects, so the key only ever goes to ENDPOINT.
+                val conn = (URL(ENDPOINT).openConnection() as HttpsURLConnection).apply {
+                    instanceFollowRedirects = false
                     requestMethod = "POST"
                     connectTimeout = 10_000
                     readTimeout = 15_000

@@ -96,7 +96,7 @@ Add a test case for the new numbers to `FareCalculatorTest`. Users already on th
 ./gradlew testDebugUnitTest
 ```
 
-Reports: `app/build/reports/tests/testDebugUnitTest/index.html`. 51 JVM tests cover `FareCalculator` (including the TN 2026 tariff in `Tn2026TariffTest`; all required cases: 5 km + 10 min day/night, below/exactly minimum distance, partial steps, waiting blocks, rounding, night boundary crossing under each rule), `NightWindow`, `GpsDistanceFilter` (drift, jumps, re-seeding, accuracy thresholds, a simulated noisy 2 km drive within ±3 %), `TripAccumulator` (auto/manual waiting, resume), routing providers, Google Maps URLs, and UPI URIs/VPA validation/PIN hashing.
+Reports: `app/build/reports/tests/testDebugUnitTest/index.html`. 61 JVM tests cover `FareCalculator` (including the TN 2026 tariff in `Tn2026TariffTest`; all required cases: 5 km + 10 min day/night, below/exactly minimum distance, partial steps, waiting blocks, rounding, night boundary crossing under each rule), `NightWindow`, `GpsDistanceFilter` (drift, jumps, re-seeding, accuracy thresholds, a simulated noisy 2 km drive within ±3 %), `TripAccumulator` (auto/manual waiting, resume), routing providers, Google Maps URLs, and UPI URIs/VPA validation/PIN hashing.
 
 Lint: `./gradlew lintDebug`.
 
@@ -153,6 +153,7 @@ Bump `versionCode` and `versionName` in `app/build.gradle.kts` for every release
 ### Play policy material
 
 - `docs/privacy-policy.md` / `docs/privacy-policy.html`: host the HTML and use its URL in the listing. Fill in the contact email first.
+- `docs/security-review.md`: findings, fixes and what was checked.
 - `docs/play-console.md`: Data safety answers, foreground-service-location declaration, prominent disclosure text, permission list.
 
 ## Map tiles

@@ -24,7 +24,11 @@ data class GpsFilterParams(
     /** Segment threshold = max(minSegmentM, accuracyFactor × fix accuracy). */
     val accuracyFactor: Double = 1.0,
     val smoothing: Boolean = true,
-)
+) {
+    val isValid: Boolean
+        get() = maxAccuracyM in 1f..10_000f && maxSpeedKmh in 1.0..1_000.0 &&
+            minSegmentM in 0.0..10_000.0 && accuracyFactor in 0.0..100.0
+}
 
 enum class RejectReason { INACCURATE, OUT_OF_ORDER, JUMP }
 

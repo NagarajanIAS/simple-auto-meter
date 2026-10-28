@@ -73,7 +73,26 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         if (edited.isValid) s.copy(presetId = FarePresets.CUSTOM_ID, customFare = edited) else s
     }
 
-    fun editMeter(transform: (MeterParams) -> MeterParams) = update { it.copy(meter = transform(it.meter)) }
+    fun editMeter(transform: (MeterParams) -> MeterParams) = update { s ->
+        val edited = transform(s.meter)
+        if (edited.isValid) s.copy(meter = edited) else s
+    }
+
+    /** Only https templates with all three tile placeholders are accepted. */
+    fun setTileUrl(url: String): Boolean {
+        val trimmed = url.trim()
+        val ok = trimmed.isEmpty() || isValidTileUrl(trimmed)
+        if (ok) update { it.copy(tileUrl = trimmed) }
+        return ok
+    }
+
+    companion object {
+        // java.net.URI rejects the {z}/{x}/{y} braces, so check the shape directly.
+        private val TILE_URL = Regex("^https://[A-Za-z0-9.-]+(:\\d{1,5})?/\\S+$")
+
+        fun isValidTileUrl(url: String): Boolean =
+            TILE_URL.matches(url) && listOf("{z}", "{x}", "{y}").all { it in url }
+    }
 }
 
 @Composable
@@ -119,27 +138,31 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            NumberField(stringResource(R.string.f_min_fare), fare.minFare, { v -> vm.editFare { it.copy(minFare = v) } })
-            NumberField(stringResource(R.string.f_min_distance), fare.minDistanceKm, { v -> vm.editFare { it.copy(minDistanceKm = v) } })
-            NumberField(stringResource(R.string.f_per_km), fare.perKmRate, { v -> vm.editFare { it.copy(perKmRate = v) } })
+            val rupees: (Double) -> Boolean = { it in 0.0..FareConfig.MAX_RUPEES }
+            NumberField(stringResource(R.string.f_min_fare), fare.minFare, { v -> vm.editFare { it.copy(minFare = v) } }, valid = rupees)
+            NumberField(
+                stringResource(R.string.f_min_distance), fare.minDistanceKm,
+                { v -> vm.editFare { it.copy(minDistanceKm = v) } }, valid = { it in 0.0..FareConfig.MAX_KM },
+            )
+            NumberField(stringResource(R.string.f_per_km), fare.perKmRate, { v -> vm.editFare { it.copy(perKmRate = v) } }, valid = rupees)
             NumberField(
                 stringResource(R.string.f_step),
                 fare.distanceStepMeters.toDouble(),
                 { v -> vm.editFare { it.copy(distanceStepMeters = v.toInt()) } },
-                integer = true, valid = { it >= 1 },
+                integer = true, valid = { it in 1.0..100_000.0 },
             )
-            NumberField(stringResource(R.string.f_waiting_rate), fare.waitingRate, { v -> vm.editFare { it.copy(waitingRate = v) } })
+            NumberField(stringResource(R.string.f_waiting_rate), fare.waitingRate, { v -> vm.editFare { it.copy(waitingRate = v) } }, valid = rupees)
             NumberField(
                 stringResource(R.string.f_waiting_block),
                 fare.waitingBlockMinutes.toDouble(),
                 { v -> vm.editFare { it.copy(waitingBlockMinutes = v.toInt()) } },
-                integer = true, valid = { it >= 1 },
+                integer = true, valid = { it in 1.0..1440.0 },
             )
             NumberField(
                 stringResource(R.string.f_night_multiplier),
                 fare.nightMultiplier,
                 { v -> vm.editFare { it.copy(nightMultiplier = v) } },
-                valid = { it >= 1.0 },
+                valid = { it in 1.0..FareConfig.MAX_MULTIPLIER },
             )
             Row {
                 TimeField(stringResource(R.string.f_night_start), fare.nightStartMinutes, Modifier.weight(1f)) { m ->
@@ -169,30 +192,33 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
 
             // Meter / GPS
             SectionTitle(stringResource(R.string.meter_settings))
-            NumberField(stringResource(R.string.m_wait_speed), s.meter.autoWaitSpeedKmh, { v -> vm.editMeter { it.copy(autoWaitSpeedKmh = v) } })
+            NumberField(
+                stringResource(R.string.m_wait_speed), s.meter.autoWaitSpeedKmh,
+                { v -> vm.editMeter { it.copy(autoWaitSpeedKmh = v) } }, valid = { it in 0.0..1_000.0 },
+            )
             NumberField(
                 stringResource(R.string.m_wait_after),
                 s.meter.autoWaitAfterSeconds.toDouble(),
                 { v -> vm.editMeter { it.copy(autoWaitAfterSeconds = v.toInt()) } },
-                integer = true,
+                integer = true, valid = { it in 0.0..86_400.0 },
             )
             NumberField(
                 stringResource(R.string.m_max_accuracy),
                 s.meter.gps.maxAccuracyM.toDouble(),
                 { v -> vm.editMeter { it.copy(gps = it.gps.copy(maxAccuracyM = v.toFloat())) } },
-                valid = { it >= 5 },
+                valid = { it in 5.0..10_000.0 },
             )
             NumberField(
                 stringResource(R.string.m_max_speed),
                 s.meter.gps.maxSpeedKmh,
                 { v -> vm.editMeter { it.copy(gps = it.gps.copy(maxSpeedKmh = v)) } },
-                valid = { it >= 20 },
+                valid = { it in 20.0..1_000.0 },
             )
             NumberField(
                 stringResource(R.string.m_min_segment),
                 s.meter.gps.minSegmentM,
                 { v -> vm.editMeter { it.copy(gps = it.gps.copy(minSegmentM = v)) } },
-                valid = { it >= 1 },
+                valid = { it in 1.0..10_000.0 },
             )
             SwitchRow(stringResource(R.string.m_smoothing), s.meter.gps.smoothing, { v -> vm.editMeter { it.copy(gps = it.gps.copy(smoothing = v)) } })
             Text(stringResource(R.string.meter_settings_note), style = MaterialTheme.typography.bodySmall)
@@ -222,7 +248,9 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
                 }
             }
             Text(stringResource(R.string.ors_note), style = MaterialTheme.typography.bodySmall)
-            TextSetting(stringResource(R.string.tile_url), s.tileUrl) { v -> vm.update { it.copy(tileUrl = v.trim()) } }
+            var tileUrlError by remember { mutableStateOf(false) }
+            TextSetting(stringResource(R.string.tile_url), s.tileUrl, isError = tileUrlError) { v -> tileUrlError = !vm.setTileUrl(v) }
+            if (tileUrlError) Text(stringResource(R.string.tile_url_invalid), color = MaterialTheme.colorScheme.error)
             Text(stringResource(R.string.tile_note), style = MaterialTheme.typography.bodySmall)
 
             // Other
@@ -275,12 +303,13 @@ private fun TimeField(label: String, minutes: Int, modifier: Modifier, onValue: 
 }
 
 @Composable
-private fun TextSetting(label: String, value: String, secret: Boolean = false, onValue: (String) -> Unit) {
+private fun TextSetting(label: String, value: String, secret: Boolean = false, isError: Boolean = false, onValue: (String) -> Unit) {
     var text by remember(value) { mutableStateOf(value) }
     OutlinedTextField(
         value = text,
         onValueChange = { text = it; onValue(it) },
         label = { Text(label) },
+        isError = isError,
         singleLine = true,
         visualTransformation = if (secret) androidx.compose.ui.text.input.PasswordVisualTransformation()
         else androidx.compose.ui.text.input.VisualTransformation.None,

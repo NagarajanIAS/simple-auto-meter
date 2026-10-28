@@ -33,7 +33,7 @@ class UpiTest {
 
     @Test
     fun `tamil payee name is percent encoded`() {
-        val uri = Upi.payUri("a@ybl", "ரவி", BigDecimal("12.5"), null)
+        val uri = Upi.payUri("ravi@ybl", "ரவி", BigDecimal("12.5"), null)
         assertTrue(uri.contains("pn=%E0%AE%B0%E0%AE%B5%E0%AE%BF"))
         assertTrue(uri.contains("am=12.50"))
     }
@@ -47,5 +47,19 @@ class UpiTest {
         val hash = PinHasher.hash("4321", salt)
         assertTrue(PinHasher.verify("4321", salt, hash))
         assertFalse(PinHasher.verify("4322", salt, hash))
+    }
+}
+
+class UpiHardeningTest {
+    @Test(expected = IllegalArgumentException::class)
+    fun `pay uri refuses a VPA that could inject parameters`() {
+        Upi.payUri("ravi@okaxis&am=1", "Ravi", null, null)
+    }
+
+    @Test
+    fun `payee name cannot inject parameters`() {
+        val uri = Upi.payUri("ravi@okaxis", "Ravi&am=1&pa=x@y", java.math.BigDecimal("50"), null)
+        assertEquals(1, uri.split("&am=").size - 1)
+        assertEquals(1, uri.split("pa=").size - 1)
     }
 }

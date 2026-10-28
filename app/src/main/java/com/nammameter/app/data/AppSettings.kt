@@ -14,6 +14,8 @@ data class DriverSettings(
     val pinSalt: String = "",
     val vpa: String = "",
     val payeeName: String = "",
+    val failedPinAttempts: Int = 0,
+    val pinLockedUntilEpochMs: Long = 0,
 ) {
     val hasPin: Boolean get() = pinHash.isNotEmpty()
     val canShowQr: Boolean get() = enabled && vpa.isNotEmpty()

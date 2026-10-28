@@ -46,6 +46,7 @@ import androidx.lifecycle.viewModelScope
 import com.nammameter.app.AppContainer
 import com.nammameter.app.R
 import com.nammameter.app.data.AppSettings
+import com.nammameter.app.fare.FareConfig
 import com.nammameter.app.fare.FareEstimator
 import com.nammameter.app.fare.FareRange
 import com.nammameter.app.routing.MapsIntents
@@ -212,7 +213,7 @@ fun EstimatorScreen(
 
             val km = kmText.replace(',', '.').toDoubleOrNull()
             val wait = waitText.toDoubleOrNull() ?: 0.0
-            if (km != null && km >= 0) {
+            if (km != null && km.isFinite() && km in 0.0..FareConfig.MAX_KM && wait.isFinite() && wait in 0.0..1440.0) {
                 val estimate = FareEstimator.estimate(settings.fareConfig, km, wait)
                 Card(
                     Modifier.fillMaxWidth(),

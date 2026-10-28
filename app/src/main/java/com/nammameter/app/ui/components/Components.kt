@@ -68,13 +68,13 @@ fun NumberField(
 ) {
     val shown = if (integer) value.toLong().toString() else value.toBigDecimal().stripTrailingZeros().toPlainString()
     var text by remember(shown) { mutableStateOf(shown) }
-    val parsed = text.toDoubleOrNull()
+    val parsed = text.toDoubleOrNull()?.takeIf { it.isFinite() }
     val isError = parsed == null || !valid(parsed) || (integer && parsed % 1.0 != 0.0)
     OutlinedTextField(
         value = text,
         onValueChange = {
             text = it
-            val v = it.toDoubleOrNull()
+            val v = it.toDoubleOrNull()?.takeIf { d -> d.isFinite() }
             if (v != null && valid(v) && (!integer || v % 1.0 == 0.0)) onValue(v)
         },
         label = { Text(label) },

@@ -236,18 +236,21 @@ class MeterService : Service() {
             toLocal(active.startEpochMs), toLocal(endEpochMs),
         )
         scope.launch {
-            val id = container.trips.save(
-                startEpochMs = active.startEpochMs,
-                endEpochMs = endEpochMs,
-                distanceMeters = acc.distanceMeters,
-                movingSeconds = acc.movingMs / 1000,
-                waitingSeconds = acc.waitingMs / 1000,
-                tariffName = active.tariffName,
-                tariffEffective = active.tariffEffective,
-                fare = fare,
-            )
-            container.liveTripStore.clear()
-            container.liveMeter.finished(id)
+            // A failed save must not kill the process and must not leave a trip that resumes into the same failure.
+            val id = runCatching {
+                container.trips.save(
+                    startEpochMs = active.startEpochMs,
+                    endEpochMs = endEpochMs,
+                    distanceMeters = acc.distanceMeters,
+                    movingSeconds = acc.movingMs / 1000,
+                    waitingSeconds = acc.waitingMs / 1000,
+                    tariffName = active.tariffName,
+                    tariffEffective = active.tariffEffective,
+                    fare = fare,
+                )
+            }.getOrNull()
+            runCatching { container.liveTripStore.clear() }
+            if (id != null) container.liveMeter.finished(id) else container.liveMeter.publish(LiveMeter())
             stopEverything()
         }
     }
