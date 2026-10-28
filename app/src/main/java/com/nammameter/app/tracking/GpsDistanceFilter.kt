@@ -50,17 +50,17 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
     private var anchor: LatLng? = null
     private var consecutiveJumps = 0
     private val smoother = PositionSmoother()
+    private val recent = ArrayDeque<Pair<Long, LatLng>>()
 
     fun process(fix: LocationFix): FilterResult {
         if (fix.accuracyM > params.maxAccuracyM) return reject(RejectReason.INACCURATE)
 
         val prev = lastGood
-        var derivedSpeed: Double? = null
         if (prev != null) {
             val dtSec = (fix.timeMs - prev.timeMs) / 1000.0
             if (dtSec <= 0) return reject(RejectReason.OUT_OF_ORDER)
-            derivedSpeed = Geo.haversineMeters(prev.latLng, fix.latLng) / dtSec
-            if (derivedSpeed * 3.6 > params.maxSpeedKmh) {
+            val jumpSpeed = Geo.haversineMeters(prev.latLng, fix.latLng) / dtSec
+            if (jumpSpeed * 3.6 > params.maxSpeedKmh) {
                 consecutiveJumps++
                 if (consecutiveJumps < RESEED_AFTER_JUMPS) return reject(RejectReason.JUMP)
                 // The earlier fix was probably the outlier: start again from here, counting nothing.
@@ -72,7 +72,7 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
         lastGood = fix
 
         val point = if (params.smoothing) smoother.process(fix) else fix.latLng
-        val speed = fix.speedMps?.toDouble() ?: derivedSpeed
+        val speed = fix.speedMps?.toDouble() ?: windowSpeed(fix.timeMs, point)
 
         val from = anchor
         if (from == null) {
@@ -92,6 +92,19 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
         anchor = null
         consecutiveJumps = 0
         smoother.reset()
+        recent.clear()
+    }
+
+    /**
+     * Speed when the receiver reports none. Fix-to-fix speed is dominated by jitter
+     * (±2 m per second reads as ~10 km/h), so measure displacement over a few seconds instead.
+     */
+    private fun windowSpeed(timeMs: Long, point: LatLng): Double? {
+        recent.addLast(timeMs to point)
+        while (recent.size > 1 && timeMs - recent.first().first > SPEED_WINDOW_MS) recent.removeFirst()
+        val (t0, p0) = recent.first()
+        val dtSec = (timeMs - t0) / 1000.0
+        return if (dtSec >= MIN_SPEED_WINDOW_S) Geo.haversineMeters(p0, point) / dtSec else null
     }
 
     private fun reseed(fix: LocationFix) {
@@ -104,6 +117,8 @@ class GpsDistanceFilter(private val params: GpsFilterParams = GpsFilterParams())
 
     private companion object {
         const val RESEED_AFTER_JUMPS = 5
+        const val SPEED_WINDOW_MS = 10_000L
+        const val MIN_SPEED_WINDOW_S = 3.0
     }
 }
 

@@ -50,6 +50,32 @@ class TripAccumulatorTest {
     }
 
     @Test
+    fun `jittery fixes without receiver speed still detect a stop`() {
+        // Emulator / some phones: no speed field, ±2 m jitter every second.
+        val acc = TripAccumulator(MeterParams(), nowMs = 0)
+        val rnd = kotlin.random.Random(1)
+        for (s in 0L..150L) {
+            val p = LatLng(origin.lat + rnd.nextDouble(-2.0, 2.0) / 111_195.0, origin.lng + rnd.nextDouble(-2.0, 2.0) / 111_195.0)
+            acc.onFix(LocationFix(p.lat, p.lng, 5f, s * 1000, speedMps = null))
+            acc.tick(s * 1000)
+        }
+        assertTrue(acc.isAutoWaiting(150_000))
+        assertTrue("waiting=${acc.waitingMs}", acc.waitingMs in 80_000L..90_000L)
+        assertEquals(0.0, acc.distanceMeters, 0.001)
+    }
+
+    @Test
+    fun `driving without receiver speed is not waiting`() {
+        val acc = TripAccumulator(MeterParams(), nowMs = 0)
+        for (s in 0L..120L) {
+            acc.onFix(LocationFix(north(s * 8.33).lat, origin.lng, 5f, s * 1000, speedMps = null))
+            acc.tick(s * 1000)
+        }
+        assertFalse(acc.isAutoWaiting(120_000))
+        assertEquals(0L, acc.waitingMs)
+    }
+
+    @Test
     fun `restored state continues from snapshot`() {
         val acc = TripAccumulator(params, nowMs = 1_000, distanceMeters = 1234.0, movingMs = 5000, waitingMs = 7000)
         acc.tick(2_000)
