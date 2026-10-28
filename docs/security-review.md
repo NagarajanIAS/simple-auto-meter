@@ -26,7 +26,7 @@ Scope: all app source, manifest, build config and the signed release APK (`versi
 ## Accepted as is
 
 - The OpenRouteService key and the salted PBKDF2 PIN hash sit in plaintext app-private DataStore. Reachable only on a rooted device. Could be wrapped with an Android Keystore key if the threat model grows.
-- Tariff values are editable without the PIN (by design: passengers may want to check them). If drivers want the tariff locked, gate the section behind the driver PIN.
+- ~~Tariff values are editable without the PIN.~~ Fixed: while driver mode is on, the tariff section in Settings is read-only until the driver PIN is entered (same lockout as the driver screen).
 - A 4-digit PIN protects against casual tampering, not a determined attacker with the unlocked phone; the lockout makes guessing impractical in practice.
 
 Keep `app/build/outputs/mapping/release/mapping.txt` for each release so crash traces can be de-obfuscated.

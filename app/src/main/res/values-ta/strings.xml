@@ -98,6 +98,8 @@
     <string name="settings_title">அமைப்புகள்</string>
     <string name="language">மொழி</string>
     <string name="language_system">போனின் இயல்பு மொழி</string>
+    <string name="tariff_locked">ஓட்டுநர் பயன்முறை இயக்கத்தில் இருக்கும்போது ஓட்டுநர் PIN-ஆல் பூட்டப்பட்டுள்ளது.</string>
+    <string name="tariff_unlock">கட்டண விகிதத்தைத் திற</string>
     <string name="tariff_edit_note">கீழே எந்த மதிப்பை மாற்றினாலும் தனிப்பயன் கட்டணத்திற்கு மாறும்.</string>
     <string name="f_min_fare">குறைந்தபட்ச கட்டணம் (₹)</string>
     <string name="f_min_distance">குறைந்தபட்ச தூரம் (கி.மீ)</string>

@@ -100,6 +100,8 @@
     <string name="settings_title">Settings</string>
     <string name="language">Language</string>
     <string name="language_system">Phone default</string>
+    <string name="tariff_locked">Locked by the driver PIN while driver mode is on.</string>
+    <string name="tariff_unlock">Unlock tariff</string>
     <string name="tariff_edit_note">Editing any value below switches to the Custom tariff.</string>
     <string name="f_min_fare">Minimum fare (₹)</string>
     <string name="f_min_distance">Minimum distance (km)</string>

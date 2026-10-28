@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +49,7 @@ import com.nammameter.app.ui.components.BackTopBar
 import com.nammameter.app.ui.components.NumberField
 import com.nammameter.app.ui.components.SectionTitle
 import com.nammameter.app.ui.components.SwitchRow
+import com.nammameter.app.upi.PinGate
 import com.nammameter.app.ui.hhMmToMinutes
 import com.nammameter.app.ui.minutesToHhMm
 import com.nammameter.app.ui.tariffEffectiveText
@@ -57,6 +61,9 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     val settings: StateFlow<AppSettings?> = container.settings.settings
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    /** Guards the tariff section while driver mode is on. */
+    val gate = PinGate(container.settings)
 
     fun update(transform: (AppSettings) -> AppSettings) {
         viewModelScope.launch { container.settings.update(transform) }
@@ -121,24 +128,55 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
                 }
             }
 
-            // Tariff
+            // Tariff — read-only behind the driver PIN while driver mode is on.
             SectionTitle(stringResource(R.string.tariff))
-            FarePresets.all.forEach { p ->
+            val tariffLocked = s.driver.enabled && s.driver.hasPin && !vm.gate.unlocked
+            var showPin by remember { mutableStateOf(false) }
+            if (tariffLocked) {
+                val eff = tariffEffectiveText(s.activePreset?.effectiveDate?.toString())
+                val name = s.activePreset?.name ?: stringResource(R.string.tariff_custom)
+                Text(if (eff != null) stringResource(R.string.tariff_label, name, eff) else name, style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.tariff_locked), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                OutlinedButton(onClick = { showPin = true }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(56.dp)) {
+                    Text(stringResource(R.string.tariff_unlock))
+                }
+                if (showPin) {
+                    AlertDialog(
+                        onDismissRequest = { showPin = false },
+                        confirmButton = { TextButton(onClick = { showPin = false }) { Text(stringResource(R.string.cancel)) } },
+                        text = { Column { EnterPin(gate = vm.gate) } },
+                    )
+                }
+                LaunchedEffect(vm.gate.unlocked) { if (vm.gate.unlocked) showPin = false }
+            }
+            if (!tariffLocked) FarePresets.all.forEach { p ->
                 val eff = tariffEffectiveText(p.effectiveDate?.toString())
                 RadioRow(
                     p.name + (eff?.let { " · $it" } ?: ""),
                     selected = s.presetId == p.id,
                 ) { vm.selectPreset(p.id) }
             }
-            RadioRow(stringResource(R.string.tariff_custom), selected = s.activePreset == null) {
+            if (!tariffLocked) RadioRow(stringResource(R.string.tariff_custom), selected = s.activePreset == null) {
                 vm.selectPreset(FarePresets.CUSTOM_ID)
             }
-            Text(
+            if (!tariffLocked) Text(
                 stringResource(R.string.tariff_edit_note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             val rupees: (Double) -> Boolean = { it in 0.0..FareConfig.MAX_RUPEES }
+            if (!tariffLocked) TariffFields(fare, rupees, vm)
+
+            // Meter / GPS
+            SectionTitle(stringResource(R.string.meter_settings))
+            MeterFields(s, vm)
+            MapsAndOtherSections(s, vm, onDriverMode, onAbout, onPermissions)
+        }
+    }
+}
+
+@Composable
+private fun TariffFields(fare: FareConfig, rupees: (Double) -> Boolean, vm: SettingsViewModel) {
             NumberField(stringResource(R.string.f_min_fare), fare.minFare, { v -> vm.editFare { it.copy(minFare = v) } }, valid = rupees)
             NumberField(
                 stringResource(R.string.f_min_distance), fare.minDistanceKm,
@@ -189,9 +227,10 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
             RadioRow(stringResource(R.string.rounding_up), fare.rounding == FareRounding.UP) {
                 vm.editFare { it.copy(rounding = FareRounding.UP) }
             }
+}
 
-            // Meter / GPS
-            SectionTitle(stringResource(R.string.meter_settings))
+@Composable
+private fun MeterFields(s: AppSettings, vm: SettingsViewModel) {
             NumberField(
                 stringResource(R.string.m_wait_speed), s.meter.autoWaitSpeedKmh,
                 { v -> vm.editMeter { it.copy(autoWaitSpeedKmh = v) } }, valid = { it in 0.0..1_000.0 },
@@ -222,7 +261,16 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
             )
             SwitchRow(stringResource(R.string.m_smoothing), s.meter.gps.smoothing, { v -> vm.editMeter { it.copy(gps = it.gps.copy(smoothing = v)) } })
             Text(stringResource(R.string.meter_settings_note), style = MaterialTheme.typography.bodySmall)
+}
 
+@Composable
+private fun MapsAndOtherSections(
+    s: AppSettings,
+    vm: SettingsViewModel,
+    onDriverMode: () -> Unit,
+    onAbout: () -> Unit,
+    onPermissions: () -> Unit,
+) {
             // Maps & routing
             SectionTitle(stringResource(R.string.maps_routing))
             NumberField(stringResource(R.string.road_factor), s.roadFactor, { v -> vm.update { it.copy(roadFactor = v) } }, valid = { it in 1.0..3.0 })
@@ -267,8 +315,6 @@ fun SettingsScreen(onBack: () -> Unit, onDriverMode: () -> Unit, onAbout: () -> 
                 Text(stringResource(R.string.about_title))
             }
             Spacer(Modifier.height(24.dp))
-        }
-    }
 }
 
 @Composable

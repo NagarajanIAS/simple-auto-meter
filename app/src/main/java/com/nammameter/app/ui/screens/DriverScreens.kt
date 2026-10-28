@@ -54,17 +54,16 @@ import com.nammameter.app.ui.components.BackTopBar
 import com.nammameter.app.ui.components.SwitchRow
 import com.nammameter.app.ui.formatRupees
 import com.nammameter.app.ui.formatRupeesExact
+import com.nammameter.app.upi.PinGate
 import com.nammameter.app.upi.PinHasher
 import com.nammameter.app.upi.QrCode
 import com.nammameter.app.upi.Upi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -74,31 +73,11 @@ class DriverViewModel(private val container: AppContainer) : ViewModel() {
     val settings: StateFlow<AppSettings?> = container.settings.settings
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    /** Unlock lasts only while this screen is on the back stack. */
-    var unlocked by mutableStateOf(false)
-        private set
-
-    /** Milliseconds until another attempt is allowed, or 0. */
-    fun lockRemainingMs(): Long =
-        ((settings.value?.driver?.pinLockedUntilEpochMs ?: 0L) - System.currentTimeMillis()).coerceAtLeast(0)
-
-    /** Wrong attempts beyond [FREE_ATTEMPTS] lock the screen for a doubling delay. The counter survives restarts. */
-    suspend fun tryUnlock(pin: String): Boolean {
-        val d = settings.value?.driver ?: return false
-        if (lockRemainingMs() > 0) return false
-        val ok = withContext(Dispatchers.Default) { PinHasher.verify(pin, d.pinSalt, d.pinHash) }
-        container.settings.update { s ->
-            val attempts = if (ok) 0 else s.driver.failedPinAttempts + 1
-            val lockMs = if (attempts > FREE_ATTEMPTS) BASE_LOCK_MS shl (attempts - FREE_ATTEMPTS - 1).coerceAtMost(8) else 0L
-            s.copy(driver = s.driver.copy(failedPinAttempts = attempts, pinLockedUntilEpochMs = System.currentTimeMillis() + lockMs))
-        }
-        unlocked = ok
-        return ok
-    }
+    val gate = PinGate(container.settings)
 
     fun createPin(pin: String) {
         setPin(pin)
-        unlocked = true
+        gate.markUnlocked()
     }
 
     /** Changing the PIN writes the new hash in one step; there is never a moment with no PIN. */
@@ -108,11 +87,6 @@ class DriverViewModel(private val container: AppContainer) : ViewModel() {
         val salt = PinHasher.newSalt()
         val hash = PinHasher.hash(pin, salt)
         updateDriver { it.copy(pinHash = hash, pinSalt = salt, failedPinAttempts = 0, pinLockedUntilEpochMs = 0) }
-    }
-
-    private companion object {
-        const val FREE_ATTEMPTS = 4
-        const val BASE_LOCK_MS = 30_000L
     }
 
     fun updateDriver(transform: (DriverSettings) -> DriverSettings) {
@@ -134,7 +108,7 @@ fun DriverScreen(onBack: () -> Unit, onStaticQr: () -> Unit, onEarnings: () -> U
             var changingPin by remember { mutableStateOf(false) }
             when {
                 !d.hasPin -> CreatePin(onCreated = vm::createPin)
-                !vm.unlocked -> EnterPin(onSubmit = vm::tryUnlock, lockRemainingMs = vm::lockRemainingMs)
+                !vm.gate.unlocked -> EnterPin(gate = vm.gate)
                 changingPin -> CreatePin(onCreated = { vm.changePin(it); changingPin = false })
                 else -> DriverSettingsForm(
                     driver = d,
@@ -182,7 +156,7 @@ private fun CreatePin(onCreated: (String) -> Unit) {
 }
 
 @Composable
-private fun EnterPin(onSubmit: suspend (String) -> Boolean, lockRemainingMs: () -> Long) {
+internal fun EnterPin(gate: PinGate) {
     var pin by remember { mutableStateOf("") }
     var wrong by remember { mutableStateOf(false) }
     var checking by remember { mutableStateOf(false) }
@@ -190,7 +164,7 @@ private fun EnterPin(onSubmit: suspend (String) -> Boolean, lockRemainingMs: () 
     val scope = rememberCoroutineScope()
     LaunchedEffect(wrong, checking) {
         while (true) {
-            lockSeconds = (lockRemainingMs() + 999) / 1000
+            lockSeconds = (gate.lockRemainingMs() + 999) / 1000
             if (lockSeconds == 0L) break
             delay(1000)
         }
@@ -206,7 +180,7 @@ private fun EnterPin(onSubmit: suspend (String) -> Boolean, lockRemainingMs: () 
         onClick = {
             checking = true
             scope.launch {
-                wrong = !onSubmit(pin)
+                wrong = !gate.tryUnlock(pin)
                 if (wrong) pin = ""
                 checking = false
             }

@@ -12,7 +12,7 @@ A GPS auto-rickshaw fare meter for Tamil Nadu. Native Android (Kotlin, Jetpack C
 
 1. **Meter.** START/STOP, manual WAIT, auto-waiting when stopped, live fare/distance/time tiles. Runs in a location foreground service with a notification, so it keeps going with the screen off. The trip state is saved every 5 s and offered for resume if the app is killed. Fare breakdown on STOP, saved to history and shareable as text.
 2. **Plan and estimate.** Opens Google Maps for "my location" and driving directions (browser fallback). Day/night fare estimate from km entered by the user. Pick a destination on an in-app OpenStreetMap map (osmdroid) for an *approximate* straight-line × road-factor distance, or a road distance from OpenRouteService with your own free API key.
-3. **Driver mode** (Settings, 4-digit PIN). Saves a UPI ID and payee name, shows a full-screen UPI QR with the fare when a trip ends (max brightness, screen kept on), a static QR without an amount, and daily earnings from local history.
+3. **Driver mode** (Settings, 4-digit PIN; while it is on, the tariff settings are also locked behind the PIN). Saves a UPI ID and payee name, shows a full-screen UPI QR with the fare when a trip ends (max brightness, screen kept on), a static QR without an amount, and daily earnings from local history.
 
 ## Requirements
 
