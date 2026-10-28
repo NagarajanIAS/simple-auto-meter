@@ -83,7 +83,7 @@ private fun configureOsmdroid(context: Context) {
 }
 
 @Composable
-fun MapScreen(pickMode: Boolean, onBack: () -> Unit, onPicked: (LatLng) -> Unit) {
+fun MapScreen(pickMode: Boolean, onBack: () -> Unit, onPicked: (destination: LatLng, from: LatLng?) -> Unit) {
     val context = LocalContext.current
     val container = context.appContainer
     val settings by container.settings.settings.collectAsState(initial = AppSettings())
@@ -103,7 +103,12 @@ fun MapScreen(pickMode: Boolean, onBack: () -> Unit, onPicked: (LatLng) -> Unit)
         }
     }
     val track = remember { Polyline(map).apply { outlinePaint.color = AndroidColor.rgb(0xE6, 0x9F, 0x00); outlinePaint.strokeWidth = 12f } }
-    val positionMarker = remember { Marker(map).apply { setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER) } }
+    val positionMarker = remember {
+        Marker(map).apply {
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            icon = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_my_position)
+        }
+    }
     val pickMarker = remember { Marker(map).apply { setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM) } }
     var centered by remember { mutableStateOf(false) }
     var appliedTileUrl by remember { mutableStateOf<String?>(null) }
@@ -174,7 +179,7 @@ fun MapScreen(pickMode: Boolean, onBack: () -> Unit, onPicked: (LatLng) -> Unit)
                         Text(stringResource(R.string.pick_hint), Modifier.padding(12.dp))
                     }
                     Button(
-                        onClick = { picked?.let(onPicked) },
+                        onClick = { picked?.let { onPicked(it, live.position ?: here) } },
                         enabled = picked != null,
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(56.dp),
                     ) { Text(stringResource(R.string.use_destination)) }

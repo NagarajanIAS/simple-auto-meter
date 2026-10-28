@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
 object LocationHelper {
@@ -32,11 +33,19 @@ object LocationHelper {
     suspend fun currentLocation(context: Context): LatLng? {
         if (!hasAnyLocation(context)) return null
         val client = LocationServices.getFusedLocationProviderClient(context)
-        return runCatching {
-            val cts = CancellationTokenSource()
-            val loc = client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token).await()
-                ?: client.lastLocation.await()
-            loc?.let { LatLng(it.latitude, it.longitude) }
-        }.getOrNull()
+        val loc = try {
+            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token).await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            null
+        } ?: try {
+            client.lastLocation.await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            null
+        }
+        return loc?.let { LatLng(it.latitude, it.longitude) }
     }
 }

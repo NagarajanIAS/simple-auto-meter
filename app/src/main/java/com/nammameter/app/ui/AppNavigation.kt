@@ -102,6 +102,7 @@ fun AppNavigation() {
                 onNeedPermission = { nav.navigate(Routes.PERMISSION) },
                 onPickOnMap = { nav.navigate(Routes.map(true)) },
                 picked = picked?.let { LatLng(it[0], it[1]) },
+                pickedFrom = picked?.takeIf { it.size == 4 }?.let { LatLng(it[2], it[3]) },
                 onPickedConsumed = { entry.savedStateHandle[Routes.PICKED_KEY] = null },
             )
         }
@@ -109,8 +110,9 @@ fun AppNavigation() {
             MapScreen(
                 pickMode = it.arguments?.getBoolean("pick") ?: false,
                 onBack = back,
-                onPicked = { p ->
-                    nav.previousBackStackEntry?.savedStateHandle?.set(Routes.PICKED_KEY, doubleArrayOf(p.lat, p.lng))
+                onPicked = { p, from ->
+                    val value = if (from != null) doubleArrayOf(p.lat, p.lng, from.lat, from.lng) else doubleArrayOf(p.lat, p.lng)
+                    nav.previousBackStackEntry?.savedStateHandle?.set(Routes.PICKED_KEY, value)
                     nav.popBackStack()
                 },
             )

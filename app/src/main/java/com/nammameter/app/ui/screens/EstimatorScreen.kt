@@ -98,6 +98,8 @@ fun EstimatorScreen(
     onNeedPermission: () -> Unit,
     onPickOnMap: () -> Unit,
     picked: LatLng?,
+    /** Position the map already had when the destination was picked, if any. */
+    pickedFrom: LatLng?,
     onPickedConsumed: () -> Unit,
 ) {
     val vm = appViewModel { EstimatorViewModel(it) }
@@ -113,11 +115,11 @@ fun EstimatorScreen(
     var locationError by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(picked) {
-        if (picked != null) {
-            onPickedConsumed()
-            val here = LocationHelper.currentLocation(context)
-            vm.routeTo(here, picked)
-        }
+        val destination = picked ?: return@LaunchedEffect
+        val from = pickedFrom ?: LocationHelper.currentLocation(context)
+        vm.routeTo(from, destination)
+        // Clear only after routing has started: clearing restarts this effect.
+        onPickedConsumed()
     }
     LaunchedEffect(route) {
         (route as? RouteState.Done)?.let { kmText = String.format(Locale.ROOT, "%.1f", it.estimate.distanceKm) }
