@@ -63,7 +63,9 @@ Auto-waiting: speed below 5 km/h continuously for more than 60 s. From then on t
 - Night: if `NightWindow.applies` (default: the trip **starts** in 22:00–05:00), the surcharge is `(minFare + distance charge) × (nightMultiplier − 1)`, plus waiting if `nightAppliesToWaiting`.
 - Total is rounded to the nearest rupee (half up) or up to the next rupee.
 
-Example (TN 2013 preset), 5.0 km + 10 min waiting: day `25 + 32×1.20 + 2×3.50 = 70.40 → ₹70`; night `25×1.5 + 38.40×1.5 + 7 = 102.10 → ₹102`.
+Example (default **TN 2026** preset: ₹50 for 1.8 km, ₹25/km, ₹1/min waiting, night ×1.5 from 22:00 to 05:00), 5.0 km + 10 min waiting: day `50 + 32×2.50 + 10×1 = 140 → ₹140`; night `(50 + 80)×1.5 + 10 = 205 → ₹205`.
+
+The older TN 2013 preset (₹25 / 1.8 km, ₹12/km, ₹3.50 per 5 min) is kept for reference: 70.40 → ₹70 by day, 102.10 → ₹102 by night.
 
 The fare config is frozen when a trip starts, so changing Settings mid-trip doesn't affect it.
 
@@ -72,21 +74,21 @@ The fare config is frozen when a trip starts, so changing Settings mid-trip does
 When a revised tariff is notified, edit **only** `app/src/main/java/com/nammameter/app/fare/FarePresets.kt`:
 
 ```kotlin
-val TN_2026 = FarePreset(
-    id = "tn_2026",                       // stable; stored in settings
-    name = "TN 2026 notified tariff",
-    effectiveDate = LocalDate.of(2026, 1, 1),
+val TN_2030 = FarePreset(
+    id = "tn_2030",                       // stable; stored in settings
+    name = "TN 2030 notified tariff",
+    effectiveDate = LocalDate.of(2030, 1, 1),
     source = "G.O. (Ms) No. … dated …",
-    config = TN_2013.config.copy(minFare = 30.0, perKmRate = 15.0),
+    config = TN_2026.config.copy(minFare = 60.0, perKmRate = 30.0),
 )
 
-val all: List<FarePreset> = listOf(TN_2026, TN_2013)
-val default: FarePreset = TN_2026
+val all: List<FarePreset> = listOf(TN_2030, TN_2026, TN_2026_GHAT, TN_2013)
+val default: FarePreset = TN_2030
 ```
 
 Add a test case for the new numbers to `FareCalculatorTest`. Users already on the old preset stay on it until they choose the new one in Settings.
 
-> The TN 2013 effective date (25 Aug 2013) and figures came from the project brief. Check them against the government order before release.
+> **Presets included:** TN 2026 (default; notified in the Gazette on 27 Oct 2026 under S.67 of the MV Act, replacing the 2013/2014 notifications), TN 2026 ghat roads (₹60 minimum, ₹30/km), and TN 2013 (superseded). The 2026 figures come from news reports of the notification. Check them against the Gazette text before release, in particular whether waiting is charged per minute and whether the night ×1.5 also applies to waiting (currently off).
 
 ## Running the tests
 
@@ -94,7 +96,7 @@ Add a test case for the new numbers to `FareCalculatorTest`. Users already on th
 ./gradlew testDebugUnitTest
 ```
 
-Reports: `app/build/reports/tests/testDebugUnitTest/index.html`. 45 JVM tests cover `FareCalculator` (all required cases: 5 km + 10 min day/night, below/exactly minimum distance, partial steps, waiting blocks, rounding, night boundary crossing under each rule), `NightWindow`, `GpsDistanceFilter` (drift, jumps, re-seeding, accuracy thresholds, a simulated noisy 2 km drive within ±3 %), `TripAccumulator` (auto/manual waiting, resume), routing providers, Google Maps URLs, and UPI URIs/VPA validation/PIN hashing.
+Reports: `app/build/reports/tests/testDebugUnitTest/index.html`. 51 JVM tests cover `FareCalculator` (including the TN 2026 tariff in `Tn2026TariffTest`; all required cases: 5 km + 10 min day/night, below/exactly minimum distance, partial steps, waiting blocks, rounding, night boundary crossing under each rule), `NightWindow`, `GpsDistanceFilter` (drift, jumps, re-seeding, accuracy thresholds, a simulated noisy 2 km drive within ±3 %), `TripAccumulator` (auto/manual waiting, resume), routing providers, Google Maps URLs, and UPI URIs/VPA validation/PIN hashing.
 
 Lint: `./gradlew lintDebug`.
 
