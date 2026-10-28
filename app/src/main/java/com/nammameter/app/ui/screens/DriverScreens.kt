@@ -263,6 +263,7 @@ fun QrScreen(tripId: Long, onBack: () -> Unit) {
             Text(
                 if (amount != null) formatRupees(amount) else stringResource(R.string.qr_any_amount),
                 fontSize = if (amount != null) 80.sp else 36.sp,
+                lineHeight = if (amount != null) 84.sp else 44.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black,
                 textAlign = TextAlign.Center,
