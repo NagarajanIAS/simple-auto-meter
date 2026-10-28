@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Namma Meter</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="share">Share</string>
+    <string name="continue_">Continue</string>
+    <string name="not_now">Not now</string>
+    <string name="day">Day</string>
+    <string name="night">Night</string>
+
+    <!-- Meter -->
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="wait">WAIT</string>
+    <string name="wait_on">WAITING — tap to resume</string>
+    <string name="current_fare">Current fare</string>
+    <string name="distance">Distance</string>
+    <string name="moving_time">Moving time</string>
+    <string name="waiting_time">Waiting time</string>
+    <string name="waiting_manual">Manual wait</string>
+    <string name="waiting_auto">Auto wait (stopped)</string>
+    <string name="gps">GPS</string>
+    <string name="gps_ok">Good</string>
+    <string name="gps_searching">Searching…</string>
+    <string name="gps_accuracy">±%d m</string>
+    <string name="night_rate_applied">Night fare applies</string>
+    <string name="tariff">Tariff</string>
+    <string name="tariff_custom">Custom tariff</string>
+    <string name="tariff_label">%1$s · effective %2$s</string>
+    <string name="stop_confirm_title">Stop the meter?</string>
+    <string name="stop_confirm_text">The trip will end and the fare will be saved.</string>
+    <string name="precise_needed_title">Precise location needed</string>
+    <string name="precise_needed_text">Approximate location is not accurate enough to measure a trip. Please allow precise location.</string>
+    <string name="resume_title">Unfinished trip</string>
+    <string name="resume_text">A trip started at %1$s (%2$s so far) was interrupted. Resume it? Time while the app was closed is not counted.</string>
+    <string name="resume">Resume</string>
+    <string name="discard">Discard</string>
+    <string name="disclaimer_short">Reference/estimate only. Not a Legal Metrology-approved fare meter.</string>
+
+    <!-- Notification -->
+    <string name="notif_channel">Running meter</string>
+    <string name="notif_starting">Starting meter…</string>
+    <string name="notif_running">%1$s · %2$s</string>
+
+    <!-- Summary / history -->
+    <string name="summary_title">Fare breakdown</string>
+    <string name="total_payable">Total payable</string>
+    <string name="bd_min_fare">Minimum fare</string>
+    <string name="bd_extra_distance">Extra distance (%s km)</string>
+    <string name="bd_waiting">Waiting (%d × block)</string>
+    <string name="bd_night">Night surcharge</string>
+    <string name="bd_night_none">Night surcharge (not applicable)</string>
+    <string name="bd_subtotal">Subtotal</string>
+    <string name="bd_total">Total (rounded)</string>
+    <string name="share_header">Auto fare — Namma Meter</string>
+    <string name="show_upi_qr">Show UPI QR</string>
+    <string name="delete_trip_title">Delete this trip?</string>
+    <string name="history_title">Trip history</string>
+    <string name="history_empty">No trips yet.</string>
+
+    <!-- Earnings -->
+    <string name="earnings_title">Earnings</string>
+    <string name="earnings_today">Today</string>
+    <plurals name="earnings_trips">
+        <item quantity="one">%d trip</item>
+        <item quantity="other">%d trips</item>
+    </plurals>
+    <string name="earnings_last_30">Last 30 days</string>
+    <string name="earnings_note">Totals of metered fares stored on this phone only. Payments are not verified.</string>
+
+    <!-- Estimator / maps -->
+    <string name="estimate_title">Plan &amp; estimate</string>
+    <string name="plan_trip">Plan a trip</string>
+    <string name="destination_hint">Destination (place or address)</string>
+    <string name="open_directions">Directions in Google Maps</string>
+    <string name="show_my_location">Show my location in Google Maps</string>
+    <string name="location_unavailable">Could not get your location. Is GPS on?</string>
+    <string name="estimate_hint">Read the driving distance in Google Maps and enter it below.</string>
+    <string name="fare_estimate">Fare estimate</string>
+    <string name="distance_km">Distance (km)</string>
+    <string name="waiting_minutes">Waiting (min)</string>
+    <string name="pick_on_map">Pick destination on map (approximate)</string>
+    <string name="route_approx">≈ %1$.1f km — APPROXIMATE (straight line × %2$.2f)</string>
+    <string name="route_ors">%.1f km road distance (OpenRouteService)</string>
+    <string name="route_failed">Could not estimate distance: %s</string>
+    <string name="estimate_range_note" formatted="false">Range allows for a route up to 10% longer. Actual metered fare may differ.</string>
+    <string name="map_title">Map</string>
+    <string name="pick_destination">Pick destination</string>
+    <string name="pick_hint">Tap the map to choose your destination.</string>
+    <string name="use_destination">Use this destination</string>
+    <string name="you_are_here">You are here</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="language">Language</string>
+    <string name="language_system">Phone default</string>
+    <string name="tariff_edit_note">Editing any value below switches to the Custom tariff.</string>
+    <string name="f_min_fare">Minimum fare (₹)</string>
+    <string name="f_min_distance">Minimum distance (km)</string>
+    <string name="f_per_km">Rate per km after minimum (₹)</string>
+    <string name="f_step">Meter step (metres)</string>
+    <string name="f_waiting_rate">Waiting charge per block (₹)</string>
+    <string name="f_waiting_block">Waiting block (minutes)</string>
+    <string name="f_night_multiplier">Night multiplier (e.g. 1.5)</string>
+    <string name="f_night_start">Night from (HH:MM)</string>
+    <string name="f_night_end">Night until (HH:MM)</string>
+    <string name="f_night_waiting">Apply night multiplier to waiting charge</string>
+    <string name="f_night_rule">Night fare applies when</string>
+    <string name="night_rule_start">Trip starts at night</string>
+    <string name="night_rule_end">Trip ends at night</string>
+    <string name="night_rule_any">Any part of trip is at night</string>
+    <string name="f_rounding">Rounding</string>
+    <string name="rounding_nearest">Nearest rupee</string>
+    <string name="rounding_up">Up to next rupee</string>
+    <string name="meter_settings">Meter &amp; GPS</string>
+    <string name="m_wait_speed">Auto-wait below speed (km/h)</string>
+    <string name="m_wait_after">Auto-wait after stopped for (seconds)</string>
+    <string name="m_max_accuracy">Ignore GPS fixes worse than (m)</string>
+    <string name="m_max_speed">Ignore jumps faster than (km/h)</string>
+    <string name="m_min_segment">Minimum counted movement (m)</string>
+    <string name="m_smoothing">Smooth GPS positions</string>
+    <string name="meter_settings_note">Changes apply from the next trip.</string>
+    <string name="maps_routing">Maps &amp; routing</string>
+    <string name="road_factor">Road factor for straight-line estimates</string>
+    <string name="routing_provider">Distance for map-picked destination</string>
+    <string name="routing_manual">Manual entry (default)</string>
+    <string name="routing_haversine">Offline straight-line × road factor</string>
+    <string name="routing_ors">OpenRouteService (needs your API key)</string>
+    <string name="ors_key">OpenRouteService API key</string>
+    <string name="ors_note">Optional. Free key from openrouteservice.org. Only the start and destination coordinates are sent, and only when you ask for an estimate.</string>
+    <string name="tile_url">Map tile URL ({z}/{x}/{y})</string>
+    <string name="tile_note">Respect the tile server\'s usage policy. The default OpenStreetMap server is for light use only.</string>
+    <string name="other">Other</string>
+    <string name="location_permission">Location permission</string>
+
+    <!-- Driver mode -->
+    <string name="driver_mode">Driver mode</string>
+    <string name="driver_mode_enable">Enable driver mode</string>
+    <string name="driver_mode_text">Show a UPI payment QR when a trip ends.</string>
+    <string name="pin">PIN</string>
+    <string name="pin_create_title">Set a 4-digit PIN</string>
+    <string name="pin_create_text">The PIN protects driver mode settings on this phone.</string>
+    <string name="pin_new">New PIN</string>
+    <string name="pin_repeat">Repeat PIN</string>
+    <string name="pin_mismatch">PINs do not match</string>
+    <string name="pin_save">Save PIN</string>
+    <string name="pin_enter_title">Enter driver PIN</string>
+    <string name="pin_wrong">Wrong PIN</string>
+    <string name="pin_change">Change PIN</string>
+    <string name="unlock">Unlock</string>
+    <string name="upi_id">UPI ID (VPA)</string>
+    <string name="upi_id_invalid">Enter a UPI ID like name@bank</string>
+    <string name="payee_name">Payee name</string>
+    <string name="static_qr">Show QR without amount</string>
+    <string name="upi_qr_title">Pay by UPI</string>
+    <string name="qr_any_amount">Scan and enter amount</string>
+    <string name="upi_note">Auto fare %s</string>
+    <string name="upi_confirm_note">Confirm payment in your bank/UPI app before the passenger leaves. This app cannot verify payments.</string>
+
+    <!-- Disclaimer / disclosure / about -->
+    <string name="disclaimer_full">Reference/estimate only. Not a Legal Metrology-approved fare meter. Fares as per the selected tariff preset.</string>
+    <string name="disclaimer_more">GPS distance can differ from an approved meter. Check the tariff in Settings matches the current government notification.</string>
+    <string name="i_understand">I understand</string>
+    <string name="disclosure_title">Location access</string>
+    <string name="disclosure_heading">Namma Meter uses your location to measure the trip</string>
+    <string name="disclosure_body">To calculate the fare, the app reads your precise GPS location while the meter is running, including when the screen is off or you switch to another app. A notification is shown the whole time.</string>
+    <string name="disclosure_point_1">Location is used only on this phone to measure distance and waiting time.</string>
+    <string name="disclosure_point_2">It is not uploaded, sold or shared. No account, ads or analytics.</string>
+    <string name="disclosure_point_3">Tracking stops when you press STOP.</string>
+    <string name="disclosure_point_4">Notification permission lets you see the running fare outside the app.</string>
+    <string name="permission_denied">Precise location was not allowed. The meter cannot run without it. You can allow it in app settings.</string>
+    <string name="open_app_settings">Open app settings</string>
+    <string name="about_title">About</string>
+    <string name="privacy">Privacy</string>
+    <string name="privacy_summary">All data stays on this phone. Location is used only for measuring trips. Nothing is sent anywhere, except optional distance queries to OpenRouteService (if you add a key) and map tiles when you open the map.</string>
+    <string name="tariff_sources">Tariff presets</string>
+    <string name="tariff_verify">Verify preset values against the official government order before relying on them.</string>
+    <string name="credits">Credits</string>
+    <string name="credits_text">Map data © OpenStreetMap contributors. QR codes by ZXing. Map view by osmdroid.</string>
+</resources>

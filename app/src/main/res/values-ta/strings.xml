@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="back">பின்செல்</string>
+    <string name="ok">சரி</string>
+    <string name="cancel">ரத்து</string>
+    <string name="save">சேமி</string>
+    <string name="delete">நீக்கு</string>
+    <string name="share">பகிர்</string>
+    <string name="continue_">தொடர்க</string>
+    <string name="not_now">இப்போது வேண்டாம்</string>
+    <string name="day">பகல்</string>
+    <string name="night">இரவு</string>
+
+    <!-- Meter -->
+    <string name="start">தொடங்கு</string>
+    <string name="stop">நிறுத்து</string>
+    <string name="wait">காத்திரு</string>
+    <string name="wait_on">காத்திருப்பு — தொடர அழுத்தவும்</string>
+    <string name="current_fare">தற்போதைய கட்டணம்</string>
+    <string name="distance">தூரம்</string>
+    <string name="moving_time">பயண நேரம்</string>
+    <string name="waiting_time">காத்திருப்பு நேரம்</string>
+    <string name="waiting_manual">கைமுறை காத்திருப்பு</string>
+    <string name="waiting_auto">தானியங்கி காத்திருப்பு (நின்றுள்ளது)</string>
+    <string name="gps">GPS</string>
+    <string name="gps_ok">நன்று</string>
+    <string name="gps_searching">தேடுகிறது…</string>
+    <string name="gps_accuracy">±%d மீ</string>
+    <string name="night_rate_applied">இரவுக் கட்டணம் பொருந்தும்</string>
+    <string name="tariff">கட்டண விகிதம்</string>
+    <string name="tariff_custom">தனிப்பயன் கட்டணம்</string>
+    <string name="tariff_label">%1$s · அமலுக்கு வந்தது %2$s</string>
+    <string name="stop_confirm_title">மீட்டரை நிறுத்தவா?</string>
+    <string name="stop_confirm_text">பயணம் முடிந்து கட்டணம் சேமிக்கப்படும்.</string>
+    <string name="precise_needed_title">துல்லியமான இருப்பிடம் தேவை</string>
+    <string name="precise_needed_text">தோராயமான இருப்பிடம் பயணத்தை அளக்கப் போதாது. துல்லியமான இருப்பிடத்தை அனுமதிக்கவும்.</string>
+    <string name="resume_title">முடிக்கப்படாத பயணம்</string>
+    <string name="resume_text">%1$s அன்று தொடங்கிய பயணம் (இதுவரை %2$s) இடையில் நின்றது. தொடரவா? செயலி மூடியிருந்த நேரம் கணக்கில் சேராது.</string>
+    <string name="resume">தொடர்</string>
+    <string name="discard">கைவிடு</string>
+    <string name="disclaimer_short">குறிப்பு/மதிப்பீடு மட்டுமே. சட்டமுறை எடையளவு (Legal Metrology) அங்கீகரித்த கட்டண மீட்டர் அல்ல.</string>
+
+    <!-- Notification -->
+    <string name="notif_channel">இயங்கும் மீட்டர்</string>
+    <string name="notif_starting">மீட்டர் தொடங்குகிறது…</string>
+    <string name="notif_running">%1$s · %2$s</string>
+
+    <!-- Summary / history -->
+    <string name="summary_title">கட்டண விவரம்</string>
+    <string name="total_payable">செலுத்த வேண்டிய தொகை</string>
+    <string name="bd_min_fare">குறைந்தபட்ச கட்டணம்</string>
+    <string name="bd_extra_distance">கூடுதல் தூரம் (%s கி.மீ)</string>
+    <string name="bd_waiting">காத்திருப்பு (%d × தொகுதி)</string>
+    <string name="bd_night">இரவுக் கூடுதல் கட்டணம்</string>
+    <string name="bd_night_none">இரவுக் கூடுதல் கட்டணம் (பொருந்தாது)</string>
+    <string name="bd_subtotal">கூட்டுத்தொகை</string>
+    <string name="bd_total">மொத்தம் (முழு ரூபாய்)</string>
+    <string name="share_header">ஆட்டோ கட்டணம் — நம்ம மீட்டர்</string>
+    <string name="show_upi_qr">UPI QR காட்டு</string>
+    <string name="delete_trip_title">இந்தப் பயணத்தை நீக்கவா?</string>
+    <string name="history_title">பயண வரலாறு</string>
+    <string name="history_empty">இதுவரை பயணங்கள் இல்லை.</string>
+
+    <!-- Earnings -->
+    <string name="earnings_title">வருமானம்</string>
+    <string name="earnings_today">இன்று</string>
+    <plurals name="earnings_trips">
+        <item quantity="one">%d பயணம்</item>
+        <item quantity="other">%d பயணங்கள்</item>
+    </plurals>
+    <string name="earnings_last_30">கடந்த 30 நாட்கள்</string>
+    <string name="earnings_note">இந்த போனில் மட்டும் சேமிக்கப்பட்ட மீட்டர் கட்டணங்களின் கூட்டுத்தொகை. பணம் செலுத்தப்பட்டதா என்பது சரிபார்க்கப்படவில்லை.</string>
+
+    <!-- Estimator / maps -->
+    <string name="estimate_title">திட்டம் &amp; மதிப்பீடு</string>
+    <string name="plan_trip">பயணம் திட்டமிடு</string>
+    <string name="destination_hint">சேருமிடம் (இடம் அல்லது முகவரி)</string>
+    <string name="open_directions">Google Maps-ல் வழி காட்டு</string>
+    <string name="show_my_location">என் இருப்பிடத்தை Google Maps-ல் காட்டு</string>
+    <string name="location_unavailable">இருப்பிடம் கிடைக்கவில்லை. GPS இயக்கத்தில் உள்ளதா?</string>
+    <string name="estimate_hint">Google Maps-ல் வாகனப் பயணத் தூரத்தைப் பார்த்து கீழே உள்ளிடவும்.</string>
+    <string name="fare_estimate">கட்டண மதிப்பீடு</string>
+    <string name="distance_km">தூரம் (கி.மீ)</string>
+    <string name="waiting_minutes">காத்திருப்பு (நிமி)</string>
+    <string name="pick_on_map">வரைபடத்தில் சேருமிடம் தேர்வு (தோராயம்)</string>
+    <string name="route_approx">≈ %1$.1f கி.மீ — தோராயம் (நேர்கோடு × %2$.2f)</string>
+    <string name="route_ors">%.1f கி.மீ சாலைத் தூரம் (OpenRouteService)</string>
+    <string name="route_failed">தூரத்தை மதிப்பிட முடியவில்லை: %s</string>
+    <string name="estimate_range_note" formatted="false">வழி 10% வரை நீளமாக இருக்கலாம் என்பதைக் கணக்கில் கொண்ட வரம்பு. உண்மையான மீட்டர் கட்டணம் மாறுபடலாம்.</string>
+    <string name="map_title">வரைபடம்</string>
+    <string name="pick_destination">சேருமிடத்தைத் தேர்வு செய்</string>
+    <string name="pick_hint">சேருமிடத்தைத் தேர்வு செய்ய வரைபடத்தைத் தொடவும்.</string>
+    <string name="use_destination">இந்தச் சேருமிடத்தைப் பயன்படுத்து</string>
+    <string name="you_are_here">நீங்கள் இங்கே</string>
+
+    <!-- Settings -->
+    <string name="settings_title">அமைப்புகள்</string>
+    <string name="language">மொழி</string>
+    <string name="language_system">போனின் இயல்பு மொழி</string>
+    <string name="tariff_edit_note">கீழே எந்த மதிப்பை மாற்றினாலும் தனிப்பயன் கட்டணத்திற்கு மாறும்.</string>
+    <string name="f_min_fare">குறைந்தபட்ச கட்டணம் (₹)</string>
+    <string name="f_min_distance">குறைந்தபட்ச தூரம் (கி.மீ)</string>
+    <string name="f_per_km">குறைந்தபட்சத்திற்குப் பின் கி.மீ கட்டணம் (₹)</string>
+    <string name="f_step">மீட்டர் படி (மீட்டர்)</string>
+    <string name="f_waiting_rate">ஒரு தொகுதி காத்திருப்புக் கட்டணம் (₹)</string>
+    <string name="f_waiting_block">காத்திருப்புத் தொகுதி (நிமிடங்கள்)</string>
+    <string name="f_night_multiplier">இரவுப் பெருக்கி (எ.கா. 1.5)</string>
+    <string name="f_night_start">இரவு தொடக்கம் (HH:MM)</string>
+    <string name="f_night_end">இரவு முடிவு (HH:MM)</string>
+    <string name="f_night_waiting">காத்திருப்புக் கட்டணத்திற்கும் இரவுப் பெருக்கி</string>
+    <string name="f_night_rule">இரவுக் கட்டணம் பொருந்துவது</string>
+    <string name="night_rule_start">பயணம் இரவில் தொடங்கினால்</string>
+    <string name="night_rule_end">பயணம் இரவில் முடிந்தால்</string>
+    <string name="night_rule_any">பயணத்தின் எந்தப் பகுதியும் இரவில் இருந்தால்</string>
+    <string name="f_rounding">முழுமையாக்கல்</string>
+    <string name="rounding_nearest">அருகிலுள்ள ரூபாய்</string>
+    <string name="rounding_up">அடுத்த ரூபாய்க்கு மேல்</string>
+    <string name="meter_settings">மீட்டர் &amp; GPS</string>
+    <string name="m_wait_speed">இந்த வேகத்திற்குக் கீழ் தானியங்கி காத்திருப்பு (கி.மீ/ம)</string>
+    <string name="m_wait_after">நின்ற பின் தானியங்கி காத்திருப்பு (விநாடிகள்)</string>
+    <string name="m_max_accuracy">இதைவிட மோசமான GPS-ஐப் புறக்கணி (மீ)</string>
+    <string name="m_max_speed">இதைவிட வேகமான தாவல்களைப் புறக்கணி (கி.மீ/ம)</string>
+    <string name="m_min_segment">கணக்கிடும் குறைந்தபட்ச நகர்வு (மீ)</string>
+    <string name="m_smoothing">GPS நிலைகளை மென்மையாக்கு</string>
+    <string name="meter_settings_note">மாற்றங்கள் அடுத்த பயணத்திலிருந்து பொருந்தும்.</string>
+    <string name="maps_routing">வரைபடம் &amp; வழித்தடம்</string>
+    <string name="road_factor">நேர்கோட்டு மதிப்பீட்டிற்கான சாலைக் காரணி</string>
+    <string name="routing_provider">வரைபடத்தில் தேர்ந்த சேருமிடத்தின் தூரம்</string>
+    <string name="routing_manual">கைமுறை உள்ளீடு (இயல்பு)</string>
+    <string name="routing_haversine">ஆஃப்லைன் நேர்கோடு × சாலைக் காரணி</string>
+    <string name="routing_ors">OpenRouteService (உங்கள் API key தேவை)</string>
+    <string name="ors_key">OpenRouteService API key</string>
+    <string name="ors_note">விருப்பத்தேர்வு. openrouteservice.org-ல் இலவச key பெறலாம். நீங்கள் மதிப்பீடு கேட்கும்போது மட்டும் தொடக்க, சேருமிட ஆயத்தொலைவுகள் அனுப்பப்படும்.</string>
+    <string name="tile_url">வரைபட டைல் URL ({z}/{x}/{y})</string>
+    <string name="tile_note">டைல் சேவையகத்தின் பயன்பாட்டுக் கொள்கையை மதிக்கவும். இயல்பு OpenStreetMap சேவையகம் குறைந்த பயன்பாட்டிற்கு மட்டுமே.</string>
+    <string name="other">பிற</string>
+    <string name="location_permission">இருப்பிட அனுமதி</string>
+
+    <!-- Driver mode -->
+    <string name="driver_mode">ஓட்டுநர் பயன்முறை</string>
+    <string name="driver_mode_enable">ஓட்டுநர் பயன்முறையை இயக்கு</string>
+    <string name="driver_mode_text">பயணம் முடிந்ததும் UPI கட்டண QR காட்டும்.</string>
+    <string name="pin">PIN</string>
+    <string name="pin_create_title">4 இலக்க PIN அமைக்கவும்</string>
+    <string name="pin_create_text">இந்த போனில் ஓட்டுநர் பயன்முறை அமைப்புகளை PIN பாதுகாக்கும்.</string>
+    <string name="pin_new">புதிய PIN</string>
+    <string name="pin_repeat">PIN-ஐ மீண்டும் உள்ளிடவும்</string>
+    <string name="pin_mismatch">PIN-கள் பொருந்தவில்லை</string>
+    <string name="pin_save">PIN-ஐச் சேமி</string>
+    <string name="pin_enter_title">ஓட்டுநர் PIN-ஐ உள்ளிடவும்</string>
+    <string name="pin_wrong">தவறான PIN</string>
+    <string name="pin_change">PIN-ஐ மாற்று</string>
+    <string name="unlock">திற</string>
+    <string name="upi_id">UPI ID (VPA)</string>
+    <string name="upi_id_invalid">name@bank போன்ற UPI ID-ஐ உள்ளிடவும்</string>
+    <string name="payee_name">பெறுநர் பெயர்</string>
+    <string name="static_qr">தொகை இல்லாத QR காட்டு</string>
+    <string name="upi_qr_title">UPI மூலம் செலுத்துக</string>
+    <string name="qr_any_amount">ஸ்கேன் செய்து தொகையை உள்ளிடவும்</string>
+    <string name="upi_note">Auto fare %s</string>
+    <string name="upi_confirm_note">பயணி இறங்குவதற்கு முன் உங்கள் வங்கி/UPI செயலியில் பணம் வந்ததை உறுதி செய்யவும். இந்தச் செயலியால் பணப்பரிமாற்றத்தைச் சரிபார்க்க முடியாது.</string>
+
+    <!-- Disclaimer / disclosure / about -->
+    <string name="disclaimer_full">குறிப்பு/மதிப்பீடு மட்டுமே. சட்டமுறை எடையளவு (Legal Metrology) அங்கீகரித்த கட்டண மீட்டர் அல்ல. தேர்ந்தெடுத்த கட்டண விகிதப்படி கட்டணம்.</string>
+    <string name="disclaimer_more">GPS தூரம் அங்கீகரிக்கப்பட்ட மீட்டரிலிருந்து மாறுபடலாம். அமைப்புகளில் உள்ள கட்டண விகிதம் தற்போதைய அரசு அறிவிப்புடன் பொருந்துகிறதா எனச் சரிபார்க்கவும்.</string>
+    <string name="i_understand">புரிந்துகொண்டேன்</string>
+    <string name="disclosure_title">இருப்பிட அணுகல்</string>
+    <string name="disclosure_heading">பயணத்தை அளக்க நம்ம மீட்டர் உங்கள் இருப்பிடத்தைப் பயன்படுத்துகிறது</string>
+    <string name="disclosure_body">கட்டணத்தைக் கணக்கிட, மீட்டர் இயங்கும்போது — திரை அணைந்திருந்தாலும் வேறு செயலிக்கு மாறினாலும் — செயலி உங்கள் துல்லியமான GPS இருப்பிடத்தைப் படிக்கும். அந்த நேரம் முழுவதும் ஓர் அறிவிப்பு காட்டப்படும்.</string>
+    <string name="disclosure_point_1">இருப்பிடம் இந்த போனில் மட்டுமே தூரத்தையும் காத்திருப்பு நேரத்தையும் அளக்கப் பயன்படும்.</string>
+    <string name="disclosure_point_2">அது பதிவேற்றப்படுவதோ, விற்கப்படுவதோ, பகிரப்படுவதோ இல்லை. கணக்கு, விளம்பரம், பகுப்பாய்வு எதுவும் இல்லை.</string>
+    <string name="disclosure_point_3">நிறுத்து அழுத்தியதும் கண்காணிப்பு நின்றுவிடும்.</string>
+    <string name="disclosure_point_4">அறிவிப்பு அனுமதி இருந்தால் செயலிக்கு வெளியேயும் கட்டணத்தைப் பார்க்கலாம்.</string>
+    <string name="permission_denied">துல்லியமான இருப்பிடம் அனுமதிக்கப்படவில்லை. அது இல்லாமல் மீட்டர் இயங்காது. செயலி அமைப்புகளில் அனுமதிக்கலாம்.</string>
+    <string name="open_app_settings">செயலி அமைப்புகளைத் திற</string>
+    <string name="about_title">பற்றி</string>
+    <string name="privacy">தனியுரிமை</string>
+    <string name="privacy_summary">எல்லாத் தரவும் இந்த போனிலேயே இருக்கும். இருப்பிடம் பயணத்தை அளக்க மட்டுமே. விருப்பமான OpenRouteService தூரக் கேள்விகள் (key சேர்த்தால்) மற்றும் வரைபடத்தைத் திறக்கும்போது டைல்கள் தவிர எதுவும் அனுப்பப்படாது.</string>
+    <string name="tariff_sources">கட்டண விகித முன்னமைவுகள்</string>
+    <string name="tariff_verify">நம்புவதற்கு முன் அதிகாரப்பூர்வ அரசாணையுடன் மதிப்புகளைச் சரிபார்க்கவும்.</string>
+    <string name="credits">நன்றி</string>
+    <string name="credits_text">வரைபடத் தரவு © OpenStreetMap பங்களிப்பாளர்கள். QR: ZXing. வரைபடக் காட்சி: osmdroid.</string>
+</resources>
